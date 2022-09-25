@@ -21,7 +21,7 @@ if values.f or values.u:
 
     if values.f:
         for file in values.f:
-            fname = file if str(file).startswith("/pdfs/") else "/pdfs/" + file
+            fname = os.path.join(os.getcwd(),file) if str(file).startswith("pdfs/") else os.path.join(os.getcwd(),"pdfs/", file)
             if os.path.isfile(fname) == False:
                 raise Exception(f"{fname} couldn't be located. Please check the path and try again")
     if values.u:
@@ -60,7 +60,7 @@ for l in urls:
     # pdfkit.from_string(x, 'x.pdf')
 if values.f:
     for file in values.f:
-        fname = file if str(file).startswith("/pdfs/") else "/pdfs/" + file
+        fname = os.path.join(os.getcwd(),file) if str(file).startswith("pdfs/") else os.path.join(os.getcwd(),"pdfs/", file)
         lex = lexers.guess_lexer_for_filename(fname,'int a = 3;')
         with open(fname) as f:
             l = f.read()
@@ -77,7 +77,7 @@ html = ("<br></br>" * 2).join(arr)
 
 if not name:
     name = str(html.__hash__() & sys.maxsize)
-    
+
 pdfkit.from_string(html, os.path.join(os.getcwd(), 'pdfs/') + name + '.pdf')
 # pdf.output('x.pdf', 'F')
 print("Pdf created as " + name + '.pdf')
