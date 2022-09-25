@@ -1,0 +1,4 @@
+pdfkit==1.0.0
+Pygments==2.11.2
+requests==2.27.1
+xvfbwrapper
