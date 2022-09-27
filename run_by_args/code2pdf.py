@@ -45,11 +45,10 @@ name = values.n
 
 arr = []
 
-
+i = 0
 for l in urls:
-
-    lex = lexers.guess_lexer(l)
-    
+    lex = lexers.guess_lexer_for_filename(values.u[i].split('/')[-1],'int a = 3;')
+    i += 1
     if authorName:
         l = langComment[lex.name.split()[0].lower()] + " Authored By: " + authorName + "\n" + l
 
