@@ -44,6 +44,7 @@ func StartConsumer() {
 	}()
 
 	// Iterate over consumer sessions.
+	fmt.Println("Starting to consume now!")
 	ctx := context.Background()
 	for {
 		handler := ConsumerGroupHandler{}

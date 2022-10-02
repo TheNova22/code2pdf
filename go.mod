@@ -1,4 +1,4 @@
-module producer
+module code2pdf
 
 go 1.19
 

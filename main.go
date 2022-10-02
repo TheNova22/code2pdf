@@ -3,7 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"producer"
+
+	"code2pdf/producer"
+
+	"code2pdf/consumer"
 )
 
 func main() {
