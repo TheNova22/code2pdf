@@ -11,7 +11,7 @@ docker build --pull --rm -f "Dockerfile" -t code2pdf:latest "."
 
 Then run the docker image by
 ```
-docker run -v  /Users/sumant/code2pdf/run_by_args/pdfs:/pdfs/ code2pdf:latest --u https://raw.githubusercontent.com/TheNova22/tkArt/main/circleDesign.py --f hw.c "sol copy.py" --a "Jayant Sogikar" --f --n "dracula" --s dracula
+docker run -v  /Users/sumant/code2pdf/run_by_args/pdfs:/pdfs/ code2pdf:latest --u https://raw.githubusercontent.com/TheNova22/tkArt/main/circleDesign.py --f hw.c "sol copy.py" --a "Jayant Sogikar" --n "dracula" --s dracula
 ```
 
 We set up a volume where code files are stored and pdfs are saved.

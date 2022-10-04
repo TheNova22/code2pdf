@@ -11,8 +11,8 @@ import (
 
 var (
 	kafkaBrokers    = []string{"localhost:9093"}
-	kafkaTopics     = []string{"sarama_topic"}
-	consumerGroupID = "sarama_consumer"
+	kafkaTopics     = []string{"url"}
+	consumerGroupID = "url_consumer"
 )
 
 func StartConsumer() {

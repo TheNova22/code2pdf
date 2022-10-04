@@ -62,7 +62,7 @@ func ProduceMessages(producer sarama.AsyncProducer, signals chan os.Signal, topi
 	// }
 	valueBytes := []byte(msg)
 	valueString := hex.EncodeToString(valueBytes)
-	message := &sarama.ProducerMessage{Topic: topic, Value: sarama.StringEncoder(valueString)}
+	message := &sarama.ProducerMessage{Topic: topic, Value: sarama.StringEncoder(valueString), Key: sarama.StringEncoder("url")}
 	select {
 	case producer.Input() <- message:
 		enqueued++
