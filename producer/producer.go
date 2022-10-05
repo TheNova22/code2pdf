@@ -73,7 +73,7 @@ func ProduceUrl(producer sarama.AsyncProducer, signals chan os.Signal, topic str
 	}
 }
 
-func ProduceFile(producer sarama.AsyncProducer, signals chan os.Signal, topic string, hexString string) {
+func ProduceFile(producer sarama.AsyncProducer, signals chan os.Signal, topic string, hexString string, key string) {
 	// for {
 	// 	time.Sleep(time.Second)
 		// valueBytes := []byte(time.Now().Format("15:04:05.000"))
@@ -89,7 +89,7 @@ func ProduceFile(producer sarama.AsyncProducer, signals chan os.Signal, topic st
 	// 	// 	return
 	// 	}
 	// }
-	message := &sarama.ProducerMessage{Topic: topic, Value: sarama.StringEncoder(hexString), Key: sarama.StringEncoder("url")}
+	message := &sarama.ProducerMessage{Topic: topic, Value: sarama.StringEncoder(hexString), Key: sarama.StringEncoder(key)}
 	select {
 	case producer.Input() <- message:
 		enqueued++

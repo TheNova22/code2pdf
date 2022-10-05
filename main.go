@@ -27,22 +27,22 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(10 << 20)
 
 	// Get handler for filename, size and headers
-	file, _, err := r.FormFile("myFile")
+	file, handler, err := r.FormFile("myFile")
 	if err != nil {
 		fmt.Println("Error Retrieving the File")
 		fmt.Println(err)
 		return
 	}
-
-	defer file.Close()
-	byteContainer, err := ioutil.ReadAll(file)
+	fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+	fmt.Printf("File Size: %+v\n", handler.Size)
+	fmt.Printf("MIME Header: %+v\n", handler.Header)
+	
+	byteContainer, _ := ioutil.ReadAll(file)
 
 	byteHex := hex.EncodeToString(byteContainer)
 
-	producer.ProduceFile(prod,sig, "file", byteHex)
-	// fmt.Printf("Uploaded File: %+v\n", handler.Filename)
-	// fmt.Printf("File Size: %+v\n", handler.Size)
-	// fmt.Printf("MIME Header: %+v\n", handler.Header)
+	producer.ProduceFile(prod,sig, "file", byteHex, handler.Filename)
+	
 
 	// // Create file
 	// dst, err := os.Create(handler.Filename)
@@ -57,7 +57,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
 	// 	return
 	// }
-
+	defer file.Close()
 	fmt.Fprintf(w, "Successfully Uploaded File\n")
 }
 
