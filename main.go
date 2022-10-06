@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"text/template"
@@ -23,41 +24,31 @@ func display(w http.ResponseWriter, page string, data interface{}) {
 }
 
 func uploadFile(w http.ResponseWriter, r *http.Request) {
-	// Maximum upload of 10 MB files
-	r.ParseMultipartForm(10 << 20)
+	
+	r.Body = http.MaxBytesReader(w, r.Body, 2 * 1024 * 1024)
 
-	// Get handler for filename, size and headers
-	file, handler, err := r.FormFile("myFile")
-	if err != nil {
-		fmt.Println("Error Retrieving the File")
-		fmt.Println(err)
-		return
+	rd, _:=r.MultipartReader()
+	
+	for {
+
+		handler, err:=rd.NextPart()
+		if err == io.EOF {
+			break
+		} else if err != nil{
+			print(err.Error())
+			break
+		}
+		// keys := make([]string, 0, len(handler.Header))
+		
+		byteContainer, _:=ioutil.ReadAll(handler)
+		fmt.Printf("Uploaded File: %+v\n", handler.FileName())
+
+		byteHex := hex.EncodeToString(byteContainer)
+
+		producer.ProduceFile(prod,sig, "file", byteHex, handler.FileName())
+		handler.Close()
 	}
-	fmt.Printf("Uploaded File: %+v\n", handler.Filename)
-	fmt.Printf("File Size: %+v\n", handler.Size)
-	fmt.Printf("MIME Header: %+v\n", handler.Header)
-	
-	byteContainer, _ := ioutil.ReadAll(file)
 
-	byteHex := hex.EncodeToString(byteContainer)
-
-	producer.ProduceFile(prod,sig, "file", byteHex, handler.Filename)
-	
-
-	// // Create file
-	// dst, err := os.Create(handler.Filename)
-	// defer dst.Close()
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// // Copy the uploaded file to the created file on the filesystem
-	// if _, err := io.Copy(dst, file); err != nil {
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-	defer file.Close()
 	fmt.Fprintf(w, "Successfully Uploaded File\n")
 }
 
