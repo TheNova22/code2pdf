@@ -74,28 +74,21 @@ func ProduceUrl(producer sarama.AsyncProducer, signals chan os.Signal, topic str
 }
 
 func ProduceFile(producer sarama.AsyncProducer, signals chan os.Signal, topic string, hexString string, key string) {
-	// for {
-	// 	time.Sleep(time.Second)
-		// valueBytes := []byte(time.Now().Format("15:04:05.000"))
-	// 	valueHash := sha256.Sum256(valueBytes)
-	// 	valueString := hex.EncodeToString(valueHash[:])
-	// 	message := &sarama.ProducerMessage{Topic: KafkaTopic, Value: sarama.StringEncoder(valueString)}
-	// 	select {
-	// 	case producer.Input() <- message:
-	// 		enqueued++
-	// 		log.Println("New Message produced")
-	// 	// case <-signals:
-	// 	// 	producer.AsyncClose() // Trigger a shutdown of the producer.
-	// 	// 	return
-	// 	}
-	// }
 	message := &sarama.ProducerMessage{Topic: topic, Value: sarama.StringEncoder(hexString), Key: sarama.StringEncoder(key)}
 	select {
 	case producer.Input() <- message:
 		enqueued++
 		log.Println("New Message produced")
-	// case <-signals:
-	// 	producer.AsyncClose() // Trigger a shutdown of the producer.
-	// 	return
+	}
+}
+
+func ProduceMsg(producer sarama.AsyncProducer, signals chan os.Signal, topic string, msg string, key string) {
+	// valueBytes := []byte(msg)
+	// valueString := hex.EncodeToString(valueBytes)
+	message := &sarama.ProducerMessage{Topic: topic, Value: sarama.StringEncoder(msg), Key: sarama.StringEncoder("url")}
+	select {
+	case producer.Input() <- message:
+		enqueued++
+		log.Println("New Message produced")
 	}
 }

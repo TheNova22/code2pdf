@@ -13,10 +13,7 @@ for message in consumer:
                                           message.value))
 
     if message.topic == "url":
-        print(binascii.hexlify(message.value).decode('utf-8'))
+        print("URL",message.value.decode('utf-8'))
     
     elif message.topic == "file":
-        fileBytes = bytes.fromhex(message.value.decode())
-        f = open(message.key, 'wb')
-        f.write(fileBytes)
-        f.close()
+        print("FILE",message.value.decode('utf-8'))

@@ -1,13 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"code2pdf/producer"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"text/template"
 )
 
@@ -24,32 +25,46 @@ func display(w http.ResponseWriter, page string, data interface{}) {
 }
 
 func uploadFile(w http.ResponseWriter, r *http.Request) {
-	
-	r.Body = http.MaxBytesReader(w, r.Body, 2 * 1024 * 1024)
+	var buf bytes.Buffer
+    // fmt.Print(r.FormValue("urls"))
+    // nr := r.Clone(r.Context())
+    r.ParseMultipartForm(20 << 20)
 
-	rd, _:=r.MultipartReader()
-	
-	for {
+	urls := strings.Split(r.MultipartForm.Value["urls"][0], ",")
 
-		handler, err:=rd.NextPart()
-		if err == io.EOF {
-			break
-		} else if err != nil{
-			print(err.Error())
-			break
+	for i, _ := range urls{
+		urls[i] = strings.Trim(urls[i], " ")
+		map1 := map[string]string{
+			"url": urls[i],
+			"usn": "u1",
 		}
-		// keys := make([]string, 0, len(handler.Header))
-		
-		byteContainer, _:=ioutil.ReadAll(handler)
-		fmt.Printf("Uploaded File: %+v\n", handler.FileName())
-
-		byteHex := hex.EncodeToString(byteContainer)
-
-		producer.ProduceFile(prod,sig, "file", byteHex, handler.FileName())
-		handler.Close()
+		jsonStr,_ := json.Marshal(map1)
+		producer.ProduceMsg(prod,sig, "url", string(jsonStr), "u1")
 	}
+    // fmt.Print("Yo : " + r.MultipartForm.Value["urls"][0] + "\n")
 
-	fmt.Fprintf(w, "Successfully Uploaded File\n")
+
+
+    files := r.MultipartForm.File["myFile"]
+    
+    for i, _ := range files {
+        file, _ := files[i].Open()
+        io.Copy(&buf, file)
+		err := ioutil.WriteFile("volume/" + files[i].Filename, buf.Bytes(), 0644)
+		map1 := map[string]string{
+			"file": files[i].Filename,
+			"usn": "u1",
+		}
+		jsonStr,_ := json.Marshal(map1)
+		producer.ProduceMsg(prod,sig, "file", string(jsonStr), "u1")
+		if err != nil {
+			panic(err)
+		}
+		buf.Reset()
+    }
+	
+    
+    fmt.Fprintf(w, "Successfully Uploaded File\n")
 }
 
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
