@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 	"text/template"
 )
@@ -30,6 +31,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
     // nr := r.Clone(r.Context())
     r.ParseMultipartForm(20 << 20)
 
+	// URL messaging
 	urls := strings.Split(r.MultipartForm.Value["urls"][0], ",")
 
 	for i, _ := range urls{
@@ -44,7 +46,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
     // fmt.Print("Yo : " + r.MultipartForm.Value["urls"][0] + "\n")
 
 
-
+	// File messaging
     files := r.MultipartForm.File["myFile"]
     
     for i, _ := range files {
@@ -62,9 +64,10 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 		}
 		buf.Reset()
     }
-	
-    
-    fmt.Fprintf(w, "Successfully Uploaded File\n")
+	// Download File
+    w.Header().Set("Content-Disposition", "attachment; filename="+strconv.Quote("volume/" + files[0].Filename))
+	w.Header().Set("Content-Type", "application/octet-stream")
+	http.ServeFile(w, r, "volume/" + files[0].Filename)
 }
 
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
