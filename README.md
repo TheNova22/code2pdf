@@ -2,6 +2,8 @@
 
 Generate pdfs through code files and raw github urls in one go
 
+
+![HLD Image](https://github.com/TheNova22/code2pdf/blob/main/code2pdf-hld.png)
 # Usage
 ## Through docker
 First build it by running
