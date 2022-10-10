@@ -43,6 +43,7 @@ services:
     restart: always
     container_name: zookeeper
 
+
   kafka2:
     image: wurstmeister/kafka:latest
     depends_on:
@@ -60,8 +61,8 @@ services:
     restart: always
     container_name: kafka2
     healthcheck:
-      test: ["CMD", "kafka-topics.sh", "--list", "--zookeeper", "zookeeper:2181"]
-      interval: 60s
+      test: ["CMD", "nc", "-vz", "kafka2", "29094"]
+      interval: 30s
       timeout: 10s
       retries: 5
 
@@ -83,10 +84,25 @@ services:
     restart: always
     container_name: kafka
     healthcheck:
-      test: ["CMD", "kafka-topics.sh", "--list", "--zookeeper", "zookeeper:2181"]
-      interval: 60s
-      timeout: 60s
-      retries: 5
+        test: ["CMD", "nc", "-vz", "kafka", "29092"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+    
+  cassandra:
+      image: cassandra:4.1
+      container_name: cassandra
+      ports:
+        - "9042:9042"
+      restart: always
+      volumes:
+        - ./cassandra_data:/var/lib/cassandra
+      healthcheck:
+        test: ["CMD", "cqlsh", "-u cassandra", "-p cassandra" ,"-e describe keyspaces"]
+        interval: 15s
+        timeout: 10s
+        retries: 10
+
 
 volumes:
   volume:

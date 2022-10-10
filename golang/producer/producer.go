@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	kafkaBrokers = []string{"kafka:29092","kafka2:29094"}
+	kafkaBrokers = []string{"kafka:29092"}
 	KafkaTopic   = "sarama_topic"
 	enqueued     int
 )
