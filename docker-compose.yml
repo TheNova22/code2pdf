@@ -8,7 +8,8 @@ services:
     ports:
       - 80:80
     depends_on:
-      - flask
+      go:
+       condition: service_started
 
   go:
     build:
@@ -16,14 +17,16 @@ services:
       dockerfile: ./golang/Dockerfile
     volumes:
       - ./volume:/volume
-    container_name: goscript
+    container_name: go
     ports:
-      - 8090:8090
+      - 1456:1456
     depends_on:
       kafka:
         condition: service_healthy
-      kafka2:
-        condition: service_healthy
+      # kafka2:
+      #   condition: service_healthy
+      flask:
+        condition: service_started
 
   flask:
     build:
@@ -44,27 +47,27 @@ services:
     container_name: zookeeper
 
 
-  kafka2:
-    image: wurstmeister/kafka:latest
-    depends_on:
-      - zookeeper
-    ports:
-      - "9094:9095"
-    expose:
-      - "9095"
-    environment:
-        KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-        KAFKA_LISTENERS: PLAINTEXT://kafka2:29094,PLAINTEXT_HOST://localhost:9094
-        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-        KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:29094,PLAINTEXT_HOST://localhost:9094
-    restart: always
-    container_name: kafka2
-    healthcheck:
-      test: ["CMD", "nc", "-vz", "kafka2", "29094"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+  # kafka2:
+  #   image: wurstmeister/kafka:latest
+  #   depends_on:
+  #     - zookeeper
+  #   ports:
+  #     - "9094:9095"
+  #   expose:
+  #     - "9095"
+  #   environment:
+  #       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #       KAFKA_LISTENERS: PLAINTEXT://kafka2:29094,PLAINTEXT_HOST://localhost:9094
+  #       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+  #       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+  #       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:29094,PLAINTEXT_HOST://localhost:9094
+  #   restart: always
+  #   container_name: kafka2
+  #   healthcheck:
+  #     test: ["CMD", "nc", "-vz", "kafka2", "29094"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
 
 
   kafka:
