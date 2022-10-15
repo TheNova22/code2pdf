@@ -38,6 +38,17 @@ services:
     container_name: flask
     ports:
       - 5000:5000
+
+  url_consumer:
+    build:
+      context: ./
+      dockerfile: ./url_consumer/Dockerfile
+    # command: python3 url.py
+    volumes:
+      - ./volume:/volume
+    container_name: url_consumer
+    ports:
+      - 740:740
   
   zookeeper:
     image: wurstmeister/zookeeper:latest
@@ -45,30 +56,6 @@ services:
       - "2181"
     restart: always
     container_name: zookeeper
-
-
-  # kafka2:
-  #   image: wurstmeister/kafka:latest
-  #   depends_on:
-  #     - zookeeper
-  #   ports:
-  #     - "9094:9095"
-  #   expose:
-  #     - "9095"
-  #   environment:
-  #       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-  #       KAFKA_LISTENERS: PLAINTEXT://kafka2:29094,PLAINTEXT_HOST://localhost:9094
-  #       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-  #       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-  #       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:29094,PLAINTEXT_HOST://localhost:9094
-  #   restart: always
-  #   container_name: kafka2
-  #   healthcheck:
-  #     test: ["CMD", "nc", "-vz", "kafka2", "29094"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 5
-
 
   kafka:
     image: wurstmeister/kafka:latest
@@ -97,6 +84,8 @@ services:
       container_name: cassandra
       ports:
         - "9042:9042"
+      expose:
+        - "9042"
       restart: always
       volumes:
         - ./cassandra_data:/var/lib/cassandra

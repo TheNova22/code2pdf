@@ -1,3 +1,2 @@
-Flask
 kafka-python
 cassandra-driver
