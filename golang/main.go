@@ -49,7 +49,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
     // fmt.Print(r.FormValue("urls"))
     // nr := r.Clone(r.Context())
     r.ParseMultipartForm(20 << 20)
-
+	usn := r.MultipartForm.Value["usn"][0]
 	// URL messaging
 	urls := strings.Split(r.MultipartForm.Value["urls"][0], ",")
 	urlSlice := make([]string, len(urls))
@@ -58,10 +58,10 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 		urlSlice[i] = urls[i]
 		map1 := map[string]string{
 			"url": urls[i],
-			"usn": "u1",
+			"usn": usn,
 		}
 		jsonStr,_ := json.Marshal(map1)
-		defer producer.ProduceMsg(prod,sig, "url", string(jsonStr), "u1")
+		defer producer.ProduceMsg(prod,sig, "url", string(jsonStr), usn)
 	}
     // fmt.Print("Yo : " + r.MultipartForm.Value["urls"][0] + "\n")
 
@@ -76,10 +76,10 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 		err := ioutil.WriteFile("/volume/" + files[i].Filename, buf.Bytes(), 0644)
 		map1 := map[string]string{
 			"file": files[i].Filename,
-			"usn": "u1",
+			"usn": usn,
 		}
 		jsonStr,_ := json.Marshal(map1)
-		defer producer.ProduceMsg(prod,sig, "file", string(jsonStr), "u1")
+		defer producer.ProduceMsg(prod,sig, "file", string(jsonStr), usn)
 		if err != nil {
 			panic(err)
 		}

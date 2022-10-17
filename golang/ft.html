@@ -9,12 +9,14 @@
   <body>
     <form
       enctype="multipart/form-data"
-      action="http://localhost:8090/"
+      action="http://localhost:80/"
       method="post"
     >
       <input type="file" name="myFile" multiple="multiple"/>
       </br>
-      Enter comma seperated URLs: <input type="text" name="urls"/>
+      Enter comma seperated raw github URLs: <input type="text" name="urls"/>
+      </br>
+      Enter your USN: <input type="text" name="usn"/>
       </br>
       <input type="submit" value="upload" />
     </form>
