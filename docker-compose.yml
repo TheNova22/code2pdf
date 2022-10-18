@@ -54,6 +54,22 @@ services:
         condition: service_healthy
       cassandra:
         condition: service_healthy
+
+  file_consumer:
+    build:
+      context: ./
+      dockerfile: ./file_consumer/Dockerfile
+    # command: python3 url.py
+    volumes:
+      - ./volume:/volume
+    container_name: file_consumer
+    ports:
+      - 741:741
+    depends_on:
+      kafka:
+        condition: service_healthy
+      cassandra:
+        condition: service_healthy
   
   zookeeper:
     image: wurstmeister/zookeeper:latest
