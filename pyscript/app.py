@@ -1,3 +1,4 @@
+import json
 from flask import Flask, jsonify, send_file, url_for, redirect, request, Blueprint
 from  pygments import lexers, formatters, styles, highlight
 import pdfkit
@@ -5,14 +6,29 @@ from xvfbwrapper import Xvfb
 import requests
 import os
 from langComment import langComment
+from cassandra.cluster import Cluster
+from cassandra.query import SimpleStatement
 
 app = Flask(__name__)
 vdisplay = Xvfb()
 vdisplay.start()
-
+cluster = Cluster(['cassandra'], port = 9042, idle_heartbeat_interval=10 )
+session = cluster.connect()
+session.default_timeout = 100
+session.set_keyspace('code2pdf')
 
 @app.route("/")
 def hello():
+    query = "SELECT * FROM codelang"
+    stmnt = SimpleStatement(query)
+    res = session.execute(stmnt)
+    fin = []
+    for r in res:
+        fin.append(r.usn)
+    return json.dumps(fin)
+
+@app.route("/stats")
+def stats():
     return "Hello Moto!"
 
 @app.route("/makePdf",methods=['POST'])
